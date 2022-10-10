@@ -111,7 +111,7 @@ func TestUsort(t *testing.T) {
 		t.Fail()
 	}
 	arr = []int{1, 2, 3, 2, 1, 2, 3}
-	arr = Usort([]int{1, 2, 3, 2, 1, 2, 3}, func(a, b int) bool { return a < b })
+	arr = Usort(arr, func(a, b int) bool { return a < b })
 	if !Equals(arr, []int{1, 2, 3}) {
 		t.Log("incorrect Sort: ", arr, []int{1, 2, 3})
 		t.Fail()
