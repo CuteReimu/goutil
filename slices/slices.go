@@ -2,7 +2,7 @@ package slices
 
 import (
 	"fmt"
-	"goutil/math"
+	"github.com/CuteReimu/goutil/math"
 	"math/rand"
 )
 
