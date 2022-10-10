@@ -25,6 +25,9 @@
 | `slices.ShuffleN(rand, arr, n)`  | 打乱一个 slice ，但后续只会用前n个值，因此做了一些优化                              |
 | `slices.Any(arr, f)`             | 只要 slice 中的任一元素满足给定的 func ，就返回 true ，否则返回 false              |
 | `slices.All(arr, f)`             | 仅当 slice 中的所有元素都满足给定的 func ， 才返回 true ，否则返回 false            |
+| `slices.Sort(arr, lessFunc)`     | 排序，改变原 slice                                                 |
+| `slices.Usort(arr, lessFunc)`    | 排序并去重，返回新的 slice                                             |
+| `slices.Uniq(arr)`               | 去重，返回新的 slice                                                |
 
 ## strings
 

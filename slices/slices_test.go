@@ -93,3 +93,36 @@ func TestAll(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestSort(t *testing.T) {
+	arr := []int{1, 2, 3, 2, 1, 2, 3}
+	Sort(arr, func(a, b int) bool { return a > b })
+	if !Equals(arr, []int{3, 3, 2, 2, 2, 1, 1}) {
+		t.Log("incorrect Sort: ", arr, []int{3, 3, 2, 2, 2, 1, 1})
+		t.Fail()
+	}
+}
+
+func TestUsort(t *testing.T) {
+	arr := []int{1, 2, 3, 2, 1, 2, 3}
+	arr = Usort(arr, func(a, b int) bool { return a > b })
+	if !Equals(arr, []int{3, 2, 1}) {
+		t.Log("incorrect Sort: ", arr, []int{3, 2, 1})
+		t.Fail()
+	}
+	arr = []int{1, 2, 3, 2, 1, 2, 3}
+	arr = Usort([]int{1, 2, 3, 2, 1, 2, 3}, func(a, b int) bool { return a < b })
+	if !Equals(arr, []int{1, 2, 3}) {
+		t.Log("incorrect Sort: ", arr, []int{1, 2, 3})
+		t.Fail()
+	}
+}
+
+func TestUniq(t *testing.T) {
+	arr := Uniq([]int{1, 2, 3, 2, 1, 2, 3})
+	Sort(arr, func(a, b int) bool { return a < b })
+	if !Equals(arr, []int{1, 2, 3}) {
+		t.Log("incorrect Sort: ", arr, []int{3, 2, 1})
+		t.Fail()
+	}
+}
