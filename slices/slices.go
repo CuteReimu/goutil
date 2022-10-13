@@ -146,3 +146,68 @@ func Uniq[T comparable](arr []T) []T {
 	}
 	return newSlice
 }
+
+// Map 将当前 slice 根据给定函数将每个元素映射后得到一个新的 slice
+func Map[T any](arr []T, f func(e T) T) []T {
+	if arr == nil {
+		return nil
+	}
+	ret := make([]T, 0, cap(arr))
+	for _, e := range arr {
+		ret = append(ret, f(e))
+	}
+	return ret
+}
+
+// Filter 将当前 slice 根据给定函数进行筛选后得到一个新的 slice
+func Filter[T any](arr []T, f func(e T) bool) (ret []T) {
+	for _, e := range arr {
+		if f(e) {
+			ret = append(ret, e)
+		}
+	}
+	return
+}
+
+// FilterMap 将当前 slice 根据给定函数将每个元素映射并筛选后得到一个新的 slice
+func FilterMap[T any](arr []T, f func(e T) (T, bool)) (ret []T) {
+	for _, e := range arr {
+		if e1, ok := f(e); ok {
+			ret = append(ret, e1)
+		}
+	}
+	return
+}
+
+// Reverse 将给定 slice 反向
+func Reverse[T any](arr []T) {
+	half := len(arr) / 2
+	for i := 0; i < half; i++ {
+		arr[i], arr[len(arr)-1-i] = arr[len(arr)-1-i], arr[i]
+	}
+}
+
+// Fold 对给定 slice 的每个元素依次调用给定函数，得到一个最终值
+func Fold[T, T2 any](arr []T, f func(e T, acc T2) T2, initial T2) T2 {
+	for _, e := range arr {
+		initial = f(e, initial)
+	}
+	return initial
+}
+
+// FoldReverse 反向对给定 slice 的每个元素依次调用给定函数，得到一个最终值
+func FoldReverse[T, T2 any](arr []T, f func(e T, acc T2) T2, initial T2) T2 {
+	for i := len(arr) - 1; i >= 0; i-- {
+		initial = f(arr[i], initial)
+	}
+	return initial
+}
+
+// Duplicate 生成一个元素全为 e 的长度为 count 的 slice
+func Duplicate[T any](count int, e T) []T {
+	ret := make([]T, count)
+	for i := 0; i < count; i++ {
+		ret[i] = e
+	}
+	return ret
+}
