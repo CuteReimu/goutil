@@ -148,11 +148,11 @@ func Uniq[T comparable](arr []T) []T {
 }
 
 // Map 将当前 slice 根据给定函数将每个元素映射后得到一个新的 slice
-func Map[T any](arr []T, f func(e T) T) []T {
+func Map[T1, T2 any](arr []T1, f func(e T1) T2) []T2 {
 	if arr == nil {
 		return nil
 	}
-	ret := make([]T, 0, cap(arr))
+	ret := make([]T2, 0, cap(arr))
 	for _, e := range arr {
 		ret = append(ret, f(e))
 	}
@@ -170,7 +170,7 @@ func Filter[T any](arr []T, f func(e T) bool) (ret []T) {
 }
 
 // FilterMap 将当前 slice 根据给定函数将每个元素映射并筛选后得到一个新的 slice
-func FilterMap[T any](arr []T, f func(e T) (T, bool)) (ret []T) {
+func FilterMap[T1, T2 any](arr []T1, f func(e T1) (T2, bool)) (ret []T2) {
 	for _, e := range arr {
 		if e1, ok := f(e); ok {
 			ret = append(ret, e1)
