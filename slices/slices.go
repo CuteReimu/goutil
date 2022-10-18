@@ -58,20 +58,20 @@ func ShuffleN[T any](rand *rand.Rand, arr []T, n int) {
 	}
 }
 
-// Any 只要 slice 中的任一元素满足给定的 func ，就返回 true ，否则返回 false
-func Any[T any](arr []T, f func(e T) bool) bool {
-	for _, e := range arr {
-		if f(e) {
+// Any 只要 0..n （含0，不含n）中的任一元素满足给定的 func ，就返回 true ，否则返回 false
+func Any(n int, f func(i int) bool) bool {
+	for i := 0; i < n; i++ {
+		if f(i) {
 			return true
 		}
 	}
 	return false
 }
 
-// All 仅当 slice 中的所有元素都满足给定的 func ， 才返回 true ，否则返回 false
-func All[T any](arr []T, f func(e T) bool) bool {
-	for _, e := range arr {
-		if !f(e) {
+// All 仅当 0..n （含0，不含n）中的所有元素都满足给定的 func ， 才返回 true ，否则返回 false
+func All(n int, f func(i int) bool) bool {
+	for i := 0; i < n; i++ {
+		if !f(i) {
 			return false
 		}
 	}
@@ -136,43 +136,21 @@ func Uniq[T comparable](arr []T) []T {
 	if len(arr) <= 1 {
 		return CopyOf(arr, len(arr))
 	}
-	m := make(map[T]bool)
+	newSlice := make([]T, 0, len(arr))
+	m := make(map[T]struct{}, len(arr))
 	for _, e := range arr {
-		m[e] = true
-	}
-	newSlice := make([]T, 0, len(m))
-	for e := range m {
-		newSlice = append(newSlice, e)
+		if _, ok := m[e]; !ok {
+			m[e] = struct{}{}
+			newSlice = append(newSlice, e)
+		}
 	}
 	return newSlice
 }
 
-// Map 将当前 slice 根据给定函数将每个元素映射后得到一个新的 slice
-func Map[T1, T2 any](arr []T1, f func(e T1) T2) []T2 {
-	if arr == nil {
-		return nil
-	}
-	ret := make([]T2, 0, cap(arr))
-	for _, e := range arr {
-		ret = append(ret, f(e))
-	}
-	return ret
-}
-
-// Filter 将当前 slice 根据给定函数进行筛选后得到一个新的 slice
-func Filter[T any](arr []T, f func(e T) bool) (ret []T) {
-	for _, e := range arr {
-		if f(e) {
-			ret = append(ret, e)
-		}
-	}
-	return
-}
-
-// FilterMap 将当前 slice 根据给定函数将每个元素映射并筛选后得到一个新的 slice
-func FilterMap[T1, T2 any](arr []T1, f func(e T1) (T2, bool)) (ret []T2) {
-	for _, e := range arr {
-		if e1, ok := f(e); ok {
+// Map 对 n..0 （含0，不含n）根据给定函数将每个元素映射并筛选后得到一个新的 slice
+func Map[T any](n int, f func(i int) (T, bool)) (ret []T) {
+	for i := 0; i < n; i++ {
+		if e1, ok := f(i); ok {
 			ret = append(ret, e1)
 		}
 	}
@@ -187,18 +165,18 @@ func Reverse[T any](arr []T) {
 	}
 }
 
-// Fold 对给定 slice 的每个元素依次调用给定函数，得到一个最终值
-func Fold[T, T2 any](arr []T, f func(e T, acc T2) T2, initial T2) T2 {
-	for _, e := range arr {
-		initial = f(e, initial)
+// Fold 对 0..n （含0，不含n）的每个元素依次调用给定函数，得到一个最终值
+func Fold[T any](n int, f func(i int, acc T) T, initial T) T {
+	for i := 0; i < n; i++ {
+		initial = f(i, initial)
 	}
 	return initial
 }
 
-// FoldReverse 反向对给定 slice 的每个元素依次调用给定函数，得到一个最终值
-func FoldReverse[T, T2 any](arr []T, f func(e T, acc T2) T2, initial T2) T2 {
-	for i := len(arr) - 1; i >= 0; i-- {
-		initial = f(arr[i], initial)
+// FoldReverse 对 n..0 （含0，不含n） 的每个元素依次调用给定函数，得到一个最终值
+func FoldReverse[T any](n int, f func(i int, acc T) T, initial T) T {
+	for i := n - 1; i >= 0; i-- {
+		initial = f(i, initial)
 	}
 	return initial
 }

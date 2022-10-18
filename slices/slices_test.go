@@ -60,9 +60,10 @@ func TestCopyOfRange(t *testing.T) {
 }
 
 func TestShuffleN(t *testing.T) {
+	r := rand.New(rand.NewSource(time.Now().UnixMilli()))
 	for i := 0; i < 100; i++ {
 		arr := []int{1, 2, 3}
-		ShuffleN(rand.New(rand.NewSource(time.Now().UnixMilli())), arr, 1)
+		ShuffleN(r, arr, 1)
 		if !Equals(arr, []int{1, 2, 3}) && !Equals(arr, []int{2, 1, 3}) && !Equals(arr, []int{3, 2, 1}) {
 			t.Log("incorrect ShuffleN: ", []int{1, 2, 3}, arr)
 			t.FailNow()
@@ -72,11 +73,11 @@ func TestShuffleN(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	arr := []int{1, 2, 3}
-	if !Any(arr, func(i int) bool { return i <= 1 }) {
+	if !Any(len(arr), func(i int) bool { return arr[i] <= 1 }) {
 		t.Log("incorrect Any: ", arr)
 		t.Fail()
 	}
-	if Any(arr, func(i int) bool { return i < 1 }) {
+	if Any(len(arr), func(i int) bool { return arr[i] < 1 }) {
 		t.Log("incorrect Any: ", arr)
 		t.Fail()
 	}
@@ -84,11 +85,11 @@ func TestAny(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	arr := []int{1, 2, 3}
-	if !All(arr, func(i int) bool { return i <= 3 }) {
+	if !All(len(arr), func(i int) bool { return arr[i] <= 3 }) {
 		t.Log("incorrect All: ", arr)
 		t.Fail()
 	}
-	if All(arr, func(i int) bool { return i < 3 }) {
+	if All(len(arr), func(i int) bool { return arr[i] < 3 }) {
 		t.Log("incorrect All: ", arr)
 		t.Fail()
 	}
@@ -129,25 +130,7 @@ func TestUniq(t *testing.T) {
 
 func TestMap(t *testing.T) {
 	arr := []int{1, 2, 3}
-	arr = Map(arr, func(e int) int { return e * 2 })
-	if !Equals(arr, []int{2, 4, 6}) {
-		t.Log("incorrect Map: ", arr, []int{2, 4, 6})
-		t.Fail()
-	}
-}
-
-func TestFilter(t *testing.T) {
-	arr := []int{1, 2, 3}
-	arr = Filter(arr, func(e int) bool { return e%2 == 1 })
-	if !Equals(arr, []int{1, 3}) {
-		t.Log("incorrect Filter: ", arr, []int{1, 3})
-		t.Fail()
-	}
-}
-
-func TestFilterMap(t *testing.T) {
-	arr := []int{1, 2, 3}
-	arr = FilterMap(arr, func(e int) (int, bool) { return e * 2, e%2 == 1 })
+	arr = Map(len(arr), func(i int) (int, bool) { return arr[i] * 2, arr[i]%2 == 1 })
 	if !Equals(arr, []int{2, 6}) {
 		t.Log("incorrect Filter: ", arr, []int{2, 6})
 		t.Fail()
@@ -161,22 +144,26 @@ func TestReverse(t *testing.T) {
 		t.Log("incorrect Map: ", arr, []int{3, 2, 1})
 		t.Fail()
 	}
+	arr = []int{1, 2, 3, 4}
+	Reverse(arr)
+	if !Equals(arr, []int{4, 3, 2, 1}) {
+		t.Log("incorrect Map: ", arr, []int{4, 3, 2, 1})
+		t.Fail()
+	}
 }
 
 func TestFold(t *testing.T) {
-	arr := SeqInt(1, 101)
-	sum := Fold(arr, func(e int, acc int) int { return acc + e }, 0)
-	if sum != SumInt(arr) {
-		t.Log("incorrect Fold: ", sum, SumInt(arr))
+	sum := Fold(100, func(i int, acc int) int { return acc + i + 1 }, 0)
+	if sum != SumInt(SeqInt(1, 101)) {
+		t.Log("incorrect Fold: ", sum, SumInt(SeqInt(1, 101)))
 		t.Fail()
 	}
 }
 
 func TestFoldReverse(t *testing.T) {
-	arr := SeqInt(1, 101)
-	sum := FoldReverse(arr, func(e int, acc int) int { return acc + e }, 0)
-	if sum != SumInt(arr) {
-		t.Log("incorrect Fold: ", sum, SumInt(arr))
+	sum := FoldReverse(100, func(e int, acc int) int { return acc + e + 1 }, 0)
+	if sum != SumInt(SeqInt(1, 101)) {
+		t.Log("incorrect Fold: ", sum, SumInt(SeqInt(1, 101)))
 		t.Fail()
 	}
 }
