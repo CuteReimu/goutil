@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+
+	"github.com/CuteReimu/goutil/math"
 )
 
 // Contains 判断一个 slice 中是否包含某个元素
@@ -188,4 +190,12 @@ func Duplicate[T any](count int, e T) []T {
 		ret[i] = e
 	}
 	return ret
+}
+
+// Sum 求和，小心溢出
+func Sum[T math.Complex](arr []T) (sum T) {
+	for _, e := range arr {
+		sum += e
+	}
+	return
 }

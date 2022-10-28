@@ -154,24 +154,24 @@ func TestReverse(t *testing.T) {
 
 func TestFold(t *testing.T) {
 	sum := Fold(100, func(i int, acc int) int { return acc + i + 1 }, 0)
-	if sum != SumInt(SeqInt(1, 101)) {
-		t.Log("incorrect Fold: ", sum, SumInt(SeqInt(1, 101)))
+	if sum != Sum(SeqInt(1, 101)) {
+		t.Log("incorrect Fold: ", sum, Sum(SeqInt(1, 101)))
 		t.Fail()
 	}
 }
 
 func TestFoldReverse(t *testing.T) {
 	sum := FoldReverse(100, func(e int, acc int) int { return acc + e + 1 }, 0)
-	if sum != SumInt(SeqInt(1, 101)) {
-		t.Log("incorrect Fold: ", sum, SumInt(SeqInt(1, 101)))
+	if sum != Sum(SeqInt(1, 101)) {
+		t.Log("incorrect Fold: ", sum, Sum(SeqInt(1, 101)))
 		t.Fail()
 	}
 }
 
 func TestDuplicate(t *testing.T) {
 	arr := Duplicate(100, 100)
-	if SumInt(arr) != 10000 {
-		t.Log("incorrect Fold: ", SumInt(arr), 10000)
+	if Sum(arr) != 10000 {
+		t.Log("incorrect Fold: ", Sum(arr), 10000)
 		t.Fail()
 	}
 }
