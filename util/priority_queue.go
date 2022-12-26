@@ -7,8 +7,8 @@ type PriorityQueue[T comparable] struct {
 }
 
 // NewPriorityQueue 用给定的初始值和比较函数新建优先队列
-func NewPriorityQueue[T comparable](queue []T, comparator func(o1, o2 T) int) *PriorityQueue[T] {
-	q := &PriorityQueue[T]{queue: queue, Comparator: comparator}
+func NewPriorityQueue[T comparable](values []T, comparator func(o1, o2 T) int) *PriorityQueue[T] {
+	q := &PriorityQueue[T]{queue: values, Comparator: comparator}
 	q.heapify()
 	return q
 }
@@ -49,10 +49,13 @@ func (q *PriorityQueue[T]) Contains(o T) bool {
 // ToSlice 返回队列中的所有元素。
 //
 // 注意，ToSlice并不一定按照大小顺序返回
-func (q *PriorityQueue[T]) ToSlice() []T {
-	ret := make([]T, len(q.queue))
-	copy(ret, q.queue)
-	return ret
+func (q *PriorityQueue[T]) ToSlice(in []T) []T {
+	l := len(q.queue)
+	if len(in) < l {
+		in = make([]T, l)
+	}
+	copy(in, q.queue)
+	return in
 }
 
 // Foreach 循环对队列中的每个元素调用函数f。对于f的返回值，若返回true表示继续循环，返回false表示跳出循环。
