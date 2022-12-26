@@ -1,6 +1,6 @@
 # goutil
 
-![](https://img.shields.io/github/languages/top/CuteReimu/goutil "语言")
+![](https://img.shields.io/github/go-mod/go-version/CuteReimu/goutil "语言")
 [![](https://img.shields.io/github/actions/workflow/status/CuteReimu/goutil/golangci-lint.yml?branch=master)](https://github.com/CuteReimu/goutil/actions/workflows/golangci-lint.yml "代码分析")
 [![](https://img.shields.io/github/contributors/CuteReimu/goutil)](https://github.com/CuteReimu/goutil/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/CuteReimu/goutil)](https://github.com/CuteReimu/goutil/blob/master/LICENSE "许可协议")
