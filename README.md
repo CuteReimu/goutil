@@ -36,18 +36,18 @@
 | `strings.IsEmpty(s)` | 判断字符串是否为空   |
 | `strings.IsBlank(s)` | 判断字符串是否全为空白 |
 
-## util.PriorityQueue
+## PriorityQueue
 
-| 函数                                          | 说明                   |
-|---------------------------------------------|----------------------|
-| `&util.PriorityQueue[int]{Comparator: cmp}` | 指定比较器，生成一个空的优先队列     |
-| `util.NewPriorityQueue[int](values, cmp)`   | 用给定的初始值和比较函数新建优先队列   |
-| `q.Add(value)`                              | 向优先队列里添加一个元素         |
-| `q.Peek()`                                  | 获取（但不移除）优先队列的第一个元素   |
-| `q.Remove(value)`                           | 从队列中移除指定的元素          |
-| `q.Contains(value)`                         | 判断优先队列里是否包含指定的元素     |
-| `q.ToSlice(nil)`                            | 返回队列中的所有元素（不一定按大小顺序） |
-| `q.Foreach(f)`                              | 遍历队列中的所有元素（不一定按大小顺序） |
-| `q.Len()`                                   | 返回优先队列中元素的个数         |
-| `q.Clear()`                                 | 清空优先队列               |
-| `q.Poll()`                                  | 移除并返回优先队列的第一个元素      |
+| 函数                                            | 说明                   |
+|-----------------------------------------------|----------------------|
+| `goutil.NewDefaultPriorityQueue[int](values)` | 用给定的初始值新建优先队列        |
+| `goutil.NewPriorityQueue[int](values, cmp)`   | 用给定的初始值和比较函数新建优先队列   |
+| `q.Add(value)`                                | 向优先队列里添加一个元素         |
+| `q.Peek()`                                    | 获取（但不移除）优先队列的第一个元素   |
+| `q.Remove(value)`                             | 从队列中移除指定的元素          |
+| `q.Contains(value)`                           | 判断优先队列里是否包含指定的元素     |
+| `q.ToSlice(nil)`                              | 返回队列中的所有元素（不一定按大小顺序） |
+| `q.Foreach(f)`                                | 遍历队列中的所有元素（不一定按大小顺序） |
+| `q.Len()`                                     | 返回优先队列中元素的个数         |
+| `q.Clear()`                                   | 清空优先队列               |
+| `q.Poll()`                                    | 移除并返回优先队列的第一个元素      |
