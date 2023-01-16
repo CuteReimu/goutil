@@ -8,6 +8,10 @@ import (
 )
 
 // Contains 判断一个 slice 中是否包含某个元素
+//
+// deprecated
+//
+// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Contains 函数
 func Contains[T comparable](arr []T, e T) bool {
 	for _, e1 := range arr {
 		if e1 == e {
@@ -18,6 +22,10 @@ func Contains[T comparable](arr []T, e T) bool {
 }
 
 // Equals 当且仅当两个 slice 长度相同且包含的元素完全相同时返回 ture ，否则返回 false
+//
+// deprecated
+//
+// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Equal 函数
 func Equals[T comparable](arr1, arr2 []T) bool {
 	if len(arr1) != len(arr2) {
 		return false
@@ -31,6 +39,10 @@ func Equals[T comparable](arr1, arr2 []T) bool {
 }
 
 // CopyOf 复制指定的 slice ，根据 newLength ，如果有必要，则截取或者在后面填默认的零值
+//
+// deprecated
+//
+// 已废弃，请直接使用 append
 func CopyOf[T any](original []T, newLength int) []T {
 	newSlice := make([]T, newLength)
 	copy(newSlice, original)
@@ -38,6 +50,10 @@ func CopyOf[T any](original []T, newLength int) []T {
 }
 
 // CopyOfRange 将指定 slice 从 from 到 to 下标复制出来，如果 to 比原 slice 的长度更长，则在后面补默认的零值
+//
+// deprecated
+//
+// 已废弃，请直接使用 append
 func CopyOfRange[T any](original []T, from, to int) []T {
 	newLength := to - from
 	if newLength < 0 {
@@ -60,6 +76,10 @@ func ShuffleN[T any](rand *rand.Rand, arr []T, n int) {
 }
 
 // Any 只要 0..n （含0，不含n）中的任一元素满足给定的 func ，就返回 true ，否则返回 false
+//
+// deprecated
+//
+// 已废弃，请使用 Contains() 代替
 func Any(n int, f func(i int) bool) bool {
 	for i := 0; i < n; i++ {
 		if f(i) {
@@ -70,6 +90,10 @@ func Any(n int, f func(i int) bool) bool {
 }
 
 // All 仅当 0..n （含0，不含n）中的所有元素都满足给定的 func ， 才返回 true ，否则返回 false
+//
+// deprecated
+//
+// 已废弃，请使用 !Contains() 代替
 func All(n int, f func(i int) bool) bool {
 	for i := 0; i < n; i++ {
 		if !f(i) {
@@ -97,6 +121,10 @@ func (m *anySlice[T]) Swap(i, j int) {
 }
 
 // Sort 排序，改变原 slice
+//
+// deprecated
+//
+// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Sort 函数
 func Sort[T any](arr []T, less func(a, b T) bool) {
 	sort.Sort(&anySlice[T]{
 		elems: arr,
@@ -110,7 +138,7 @@ func Usort[T any](arr []T, lessThan func(a, b T) bool) []T {
 		return nil
 	}
 	if len(arr) <= 1 {
-		return CopyOf(arr, len(arr))
+		return append(([]T)(nil), arr...)
 	}
 	var newSlice []T
 	for _, e := range arr {
@@ -135,7 +163,7 @@ func Uniq[T comparable](arr []T) []T {
 		return nil
 	}
 	if len(arr) <= 1 {
-		return CopyOf(arr, len(arr))
+		return append(([]T)(nil), arr...)
 	}
 	newSlice := make([]T, 0, len(arr))
 	m := make(map[T]struct{}, len(arr))
