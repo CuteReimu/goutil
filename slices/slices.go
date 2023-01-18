@@ -124,7 +124,7 @@ func (m *anySlice[T]) Swap(i, j int) {
 //
 // deprecated
 //
-// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Sort 函数
+// 已废弃，请使用 "golang.org/x/exp/slices" 中的 SortFunc 函数
 func Sort[T any](arr []T, less func(a, b T) bool) {
 	sort.Sort(&anySlice[T]{
 		elems: arr,
