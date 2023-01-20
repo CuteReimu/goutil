@@ -56,3 +56,40 @@ func TestBlockingQueuePut(t *testing.T) {
 		t.Fail()
 	}
 }
+
+// goos: windows
+// goarch: amd64
+// pkg: github.com/CuteReimu/goutil
+// cpu: Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz
+// BenchmarkBlockingQueue
+// BenchmarkBlockingQueue-8             872           1428708 ns/op
+func BenchmarkBlockingQueue(b *testing.B) {
+	q := NewBlockingQueue[int]()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			r := rand.New(rand.NewSource(time.Now().UnixMilli()))
+			for i := 0; i < 10000; i++ {
+				q.Put(r.Int())
+			}
+		}
+	})
+}
+
+// goos: windows
+// goarch: amd64
+// cpu: Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz
+// BenchmarkBlockingQueue2
+// BenchmarkBlockingQueue2-8            538           1977807 ns/op
+//
+// import "github.com/davyxu/cellnet"
+// func BenchmarkBlockingQueue2(b *testing.B) {
+//	 q := cellnet.NewPipe()
+//	 b.RunParallel(func(pb *testing.PB) {
+//	 	 for pb.Next() {
+//	 	 	 r := rand.New(rand.NewSource(time.Now().UnixMilli()))
+//	 	 	 for i := 0; i < 10000; i++ {
+//	 	 	     q.Add(r.Int())
+//	 	 	 }
+//	 	 }
+//	 })
+// }
