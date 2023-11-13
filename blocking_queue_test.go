@@ -1,8 +1,8 @@
 package goutil
 
 import (
-	"golang.org/x/exp/slices"
 	"math/rand"
+	"slices"
 	"sync"
 	"testing"
 	"time"

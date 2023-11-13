@@ -2,11 +2,14 @@ package slices
 
 import (
 	"fmt"
-	"golang.org/x/exp/constraints"
 )
 
+type integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
 // Seq 生成连续多个数组成的 slice
-func Seq[T constraints.Integer](from, to T, span ...T) []T {
+func Seq[T integer](from, to T, span ...T) []T {
 	if from == to {
 		return nil
 	}

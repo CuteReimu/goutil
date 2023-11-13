@@ -1,6 +1,8 @@
 package goutil
 
-import "golang.org/x/exp/constraints"
+import (
+	"cmp"
+)
 
 // PriorityQueue 优先队列
 type PriorityQueue[T any] interface {
@@ -171,12 +173,12 @@ func (q *priorityQueueWithComparator[T]) heapify() {
 	}
 }
 
-type defaultPriorityQueue[T constraints.Ordered] struct {
+type defaultPriorityQueue[T cmp.Ordered] struct {
 	queue []T
 }
 
 // NewDefaultPriorityQueue 用给定的初始值新建优先队列
-func NewDefaultPriorityQueue[T constraints.Ordered](values []T) PriorityQueue[T] {
+func NewDefaultPriorityQueue[T cmp.Ordered](values []T) PriorityQueue[T] {
 	q := &defaultPriorityQueue[T]{queue: values}
 	q.heapify()
 	return q

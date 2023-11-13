@@ -2,7 +2,6 @@ package slices
 
 import (
 	"fmt"
-	"golang.org/x/exp/constraints"
 	"math/rand"
 	"sort"
 )
@@ -11,7 +10,7 @@ import (
 //
 // deprecated
 //
-// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Contains 函数
+// 已废弃，请使用 "slices" 中的 Contains 函数
 func Contains[T comparable](arr []T, e T) bool {
 	for _, e1 := range arr {
 		if e1 == e {
@@ -25,7 +24,7 @@ func Contains[T comparable](arr []T, e T) bool {
 //
 // deprecated
 //
-// 已废弃，请使用 "golang.org/x/exp/slices" 中的 Equal 函数
+// 已废弃，请使用 "slices" 中的 Equal 函数
 func Equals[T comparable](arr1, arr2 []T) bool {
 	if len(arr1) != len(arr2) {
 		return false
@@ -124,7 +123,7 @@ func (m *anySlice[T]) Swap(i, j int) {
 //
 // deprecated
 //
-// 已废弃，请使用 "golang.org/x/exp/slices" 中的 SortFunc 函数
+// 已废弃，请使用 "slices" 中的 SortFunc 函数
 func Sort[T any](arr []T, less func(a, b T) bool) {
 	sort.Sort(&anySlice[T]{
 		elems: arr,
@@ -221,7 +220,7 @@ func Duplicate[T any](count int, e T) []T {
 
 // Sum 求和，小心溢出
 func Sum[T interface {
-	constraints.Integer | constraints.Float | constraints.Complex
+	integer | ~float32 | ~float64 | ~complex64 | ~complex128
 }](arr []T) (sum T) {
 	for _, e := range arr {
 		sum += e

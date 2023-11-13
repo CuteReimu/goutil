@@ -2,8 +2,8 @@ package goutil
 
 import (
 	"fmt"
-	"golang.org/x/exp/slices"
 	"math/rand"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
