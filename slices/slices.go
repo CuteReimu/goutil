@@ -3,6 +3,7 @@ package slices
 import (
 	"fmt"
 	"math/rand"
+	"slices"
 	"sort"
 )
 
@@ -41,7 +42,7 @@ func Equals[T comparable](arr1, arr2 []T) bool {
 //
 // deprecated
 //
-// 已废弃，请直接使用 append
+// 已废弃，请使用 "slices" 中的 Clone 函数
 func CopyOf[T any](original []T, newLength int) []T {
 	newSlice := make([]T, newLength)
 	copy(newSlice, original)
@@ -132,14 +133,15 @@ func Sort[T any](arr []T, less func(a, b T) bool) {
 }
 
 // Usort 排序并去重，返回新的 slice
+//
+// deprecated
+//
+// 已废弃，请调用 slices.SortFunc 函数后，再调用 slices.CompactFunc 函数
 func Usort[T any](arr []T, lessThan func(a, b T) bool) []T {
-	if arr == nil {
-		return nil
-	}
 	if len(arr) <= 1 {
-		return append(([]T)(nil), arr...)
+		return slices.Clone(arr）
 	}
-	var newSlice []T
+	newSlice := make([]T, 0, len(arr))
 	for _, e := range arr {
 		i := sort.Search(len(newSlice), func(i int) bool { return !lessThan(newSlice[i], e) })
 		if i >= len(newSlice) || lessThan(e, newSlice[i]) || lessThan(newSlice[i], e) {
@@ -158,11 +160,8 @@ func Usort[T any](arr []T, lessThan func(a, b T) bool) []T {
 
 // Uniq 去重，返回新的 slice
 func Uniq[T comparable](arr []T) []T {
-	if arr == nil {
-		return nil
-	}
 	if len(arr) <= 1 {
-		return append(([]T)(nil), arr...)
+		return slices.Clone(arr）
 	}
 	newSlice := make([]T, 0, len(arr))
 	m := make(map[T]struct{}, len(arr))
@@ -172,20 +171,25 @@ func Uniq[T comparable](arr []T) []T {
 			newSlice = append(newSlice, e)
 		}
 	}
-	return newSlice
+	return slices.Clip(newSlice)
 }
 
 // Map 对 n..0 （含0，不含n）根据给定函数将每个元素映射并筛选后得到一个新的 slice
-func Map[T any](n int, f func(i int) (T, bool)) (ret []T) {
+func Map[T any](n int, f func(i int) (T, bool)) []T {
+	ret := make([]T, 0, n)
 	for i := 0; i < n; i++ {
 		if e1, ok := f(i); ok {
 			ret = append(ret, e1)
 		}
 	}
-	return
+	return slices.Clip(ret)
 }
 
 // Reverse 将给定 slice 反向
+//
+// deprecated
+//
+// 已废弃，请使用 "slices" 中的 Reverse 函数
 func Reverse[T any](arr []T) {
 	half := len(arr) / 2
 	for i := 0; i < half; i++ {
