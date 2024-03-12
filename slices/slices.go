@@ -139,29 +139,22 @@ func Sort[T any](arr []T, less func(a, b T) bool) {
 // 已废弃，请调用 slices.SortFunc 函数后，再调用 slices.CompactFunc 函数
 func Usort[T any](arr []T, lessThan func(a, b T) bool) []T {
 	if len(arr) <= 1 {
-		return slices.Clone(arr）
+		return slices.Clone(arr)
 	}
 	newSlice := make([]T, 0, len(arr))
 	for _, e := range arr {
 		i := sort.Search(len(newSlice), func(i int) bool { return !lessThan(newSlice[i], e) })
 		if i >= len(newSlice) || lessThan(e, newSlice[i]) || lessThan(newSlice[i], e) {
-			if cap(newSlice) >= len(newSlice)+1 {
-				newSlice = append(newSlice, newSlice[len(newSlice)-1])
-				for j := len(newSlice) - 1; j > i; j-- {
-					newSlice[j] = newSlice[j-1]
-				}
-				newSlice[i] = e
-			}
-			newSlice = append(append(newSlice[:i:i], e), newSlice[i:]...)
+			newSlice = slices.Insert(newSlice, i, e)
 		}
 	}
-	return newSlice
+	return slices.Clip(newSlice)
 }
 
 // Uniq 去重，返回新的 slice
 func Uniq[T comparable](arr []T) []T {
 	if len(arr) <= 1 {
-		return slices.Clone(arr）
+		return slices.Clone(arr)
 	}
 	newSlice := make([]T, 0, len(arr))
 	m := make(map[T]struct{}, len(arr))
