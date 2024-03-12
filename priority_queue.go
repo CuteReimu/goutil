@@ -2,6 +2,7 @@ package goutil
 
 import (
 	"cmp"
+	"slices"
 )
 
 // PriorityQueue 优先队列
@@ -79,9 +80,10 @@ func (q *priorityQueueWithComparator[T]) Contains(o T) bool {
 func (q *priorityQueueWithComparator[T]) ToSlice(in []T) []T {
 	l := len(q.queue)
 	if len(in) < l {
-		in = make([]T, l)
+		in = slices.Clone(q.queue)
+	} else {
+		copy(in, q.queue)
 	}
-	copy(in, q.queue)
 	return in
 }
 
@@ -220,9 +222,10 @@ func (q *defaultPriorityQueue[T]) Contains(o T) bool {
 func (q *defaultPriorityQueue[T]) ToSlice(in []T) []T {
 	l := len(q.queue)
 	if len(in) < l {
-		in = make([]T, l)
+		in = slices.Clone(q.queue)
+	} else {
+		copy(in, q.queue)
 	}
-	copy(in, q.queue)
 	return in
 }
 
