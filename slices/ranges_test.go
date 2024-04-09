@@ -19,19 +19,19 @@ func TestRangeFunctionWithNegativeNumbers(t *testing.T) {
 }
 
 func TestRangeFunctionWithZero(t *testing.T) {
-	for range Range(0, 0) {
+	for _ = range Range(0, 0) {
 		t.Fail() // Should not be called
 	}
 }
 
 func TestRangeFunctionWithSameStartAndEnd(t *testing.T) {
-	for range Range(10, 10) {
+	for _ = range Range(10, 10) {
 		t.Fail() // Should not be called
 	}
 }
 
 func TestRangeFunctionWithStartGreaterThanEnd(t *testing.T) {
-	for range Range(5, 1) {
+	for _ = range Range(5, 1) {
 		t.Fail() // Should not be called
 	}
 }
@@ -53,19 +53,19 @@ func TestProgressionFunctionWithNegativeNumbers(t *testing.T) {
 }
 
 func TestProgressionFunctionWithZero(t *testing.T) {
-	for range Progression[int](0, 0, 1) {
+	for _ = range Progression[int](0, 0, 1) {
 		t.Fail() // Should not be called
 	}
 }
 
 func TestProgressionFunctionWithSameStartAndEnd(t *testing.T) {
-	for range Progression[int](10, 10, 1) {
+	for _ = range Progression[int](10, 10, 1) {
 		t.Fail() // Should not be called
 	}
 }
 
 func TestProgressionFunctionWithStartGreaterThanEnd(t *testing.T) {
-	for range Progression[int](5, 1, 1) {
+	for _ = range Progression[int](5, 1, 1) {
 		t.Fail() // Should not be called
 	}
 }
