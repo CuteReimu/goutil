@@ -16,7 +16,9 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: 'stable'
+
+      - run: go env -w GOEXPERIMENT=rangefunc
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v4
@@ -26,7 +28,7 @@ jobs:
           install-mode: goinstall
 
       - name: Build
-        run: GOEXPERIMENT=rangefunc go build -v ./...
+        run: go build -v ./...
 
       - name: Test
-        run: GOEXPERIMENT=rangefunc go test -v ./...
+        run: go test -v ./...
