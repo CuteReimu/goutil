@@ -2,8 +2,6 @@ package slices
 
 // Range 生成一个左开右闭区间的整数序列，包含 start ，不含 end
 //
-// 如果需要使用，需要在编译时设置环境变量 GOEXPERIMENT=rangefunc
-//
 // 使用方法：
 //
 //	for i := range Range(1, 5) {
@@ -14,8 +12,6 @@ func Range[E integer](start, end E) func(func(E) bool) {
 }
 
 // Progression 生成一个左开右闭区间的整数序列，包含 start ，不含 end ，步长为 step
-//
-// 如果需要使用，需要在编译时设置环境变量 GOEXPERIMENT=rangefunc
 //
 // 使用方法：
 //
