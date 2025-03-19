@@ -29,7 +29,7 @@
 | `slices.Usort(arr, lessFunc)`    | 排序并去重，返回新的 slice                                             |
 | `slices.Uniq(arr)`               | 去重，返回新的 slice                                                |
 
-支持了部分Go1.22的range-over-function试验性特性，请配合`GOEXPERIMENT=rangefunc`使用
+支持了Go1.23的range-over-function特性，例如：
 
 ```go
 import "github.com/CuteReimu/goutil/slices"
