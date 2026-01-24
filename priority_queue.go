@@ -59,6 +59,8 @@ func (h *heapWithComparator[T]) Pop() interface{} {
 	old := h.elements
 	n := len(old)
 	x := old[n-1]
+	var zero T
+	old[n-1] = zero
 	h.elements = old[0 : n-1]
 	return x
 }
@@ -163,6 +165,8 @@ func (h *defaultHeap[T]) Pop() interface{} {
 	old := h.elements
 	n := len(old)
 	x := old[n-1]
+	var zero T
+	old[n-1] = zero
 	h.elements = old[0 : n-1]
 	return x
 }
