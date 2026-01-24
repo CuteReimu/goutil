@@ -137,7 +137,11 @@ func (q *priorityQueueWithComparator[T]) Clear() {
 }
 
 func (q *priorityQueueWithComparator[T]) Poll() T {
-	return heap.Pop(q.heap).(T)
+	// Access the first element directly to preserve the previous
+	// slice bounds-check panic behavior when the queue is empty.
+	result := q.heap.elements[0]
+	heap.Remove(q.heap, 0)
+	return result
 }
 
 // defaultHeap is an internal heap implementation for ordered types
@@ -240,5 +244,9 @@ func (q *defaultPriorityQueue[T]) Clear() {
 }
 
 func (q *defaultPriorityQueue[T]) Poll() T {
-	return heap.Pop(q.heap).(T)
+	// Access the first element directly to preserve the previous
+	// slice bounds-check panic behavior when the queue is empty.
+	result := q.heap.elements[0]
+	heap.Remove(q.heap, 0)
+	return result
 }
