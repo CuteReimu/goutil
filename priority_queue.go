@@ -61,7 +61,7 @@ func (h *heapWithComparator[T]) Pop() interface{} {
 	x := old[n-1]
 	var zero T
 	old[n-1] = zero
-	h.elements = old[0 : n-1]
+	h.elements = old[:n-1]
 	return x
 }
 
@@ -121,8 +121,10 @@ func (q *priorityQueueWithComparator[T]) ToSlice(in []T) []T {
 }
 
 func (q *priorityQueueWithComparator[T]) Foreach(f func(e T) bool) {
-	for i := 0; i < len(q.heap.elements); i++ {
-		if !f(q.heap.elements[i]) {
+	es := q.heap.elements
+	n := len(es)
+	for i := 0; i < n; i++ {
+		if !f(es[i]) {
 			break
 		}
 	}
@@ -171,7 +173,7 @@ func (h *defaultHeap[T]) Pop() interface{} {
 	x := old[n-1]
 	var zero T
 	old[n-1] = zero
-	h.elements = old[0 : n-1]
+	h.elements = old[:n-1]
 	return x
 }
 
@@ -228,8 +230,10 @@ func (q *defaultPriorityQueue[T]) ToSlice(in []T) []T {
 }
 
 func (q *defaultPriorityQueue[T]) Foreach(f func(e T) bool) {
-	for i := 0; i < len(q.heap.elements); i++ {
-		if !f(q.heap.elements[i]) {
+	es := q.heap.elements
+	n := len(es)
+	for i := 0; i < n; i++ {
+		if !f(es[i]) {
 			break
 		}
 	}
