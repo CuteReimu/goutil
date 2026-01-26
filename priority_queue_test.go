@@ -392,12 +392,12 @@ func TestToSliceWithLargerInput(t *testing.T) {
 		// Create a slice with stale data that's larger than the queue
 		input := []int{99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
 		result := q.ToSlice(input)
-		
+
 		// Result should have length 5 (queue size), not 10 (input size)
 		if len(result) != 5 {
 			t.Errorf("Expected length 5, got %d", len(result))
 		}
-		
+
 		// Result should not contain any stale 99 values
 		for _, v := range result {
 			if v == 99 {
@@ -405,7 +405,7 @@ func TestToSliceWithLargerInput(t *testing.T) {
 				break
 			}
 		}
-		
+
 		// Verify the result contains all queue elements
 		expected := []int{1, 1, 3, 4, 5}
 		slices.Sort(result)
@@ -413,19 +413,19 @@ func TestToSliceWithLargerInput(t *testing.T) {
 			t.Errorf("Expected %v, got %v", expected, result)
 		}
 	})
-	
+
 	// Test with default queue
 	t.Run("Default", func(t *testing.T) {
 		q := NewDefaultPriorityQueue([]int{3, 1, 4, 1, 5})
 		// Create a slice with stale data that's larger than the queue
 		input := []int{99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
 		result := q.ToSlice(input)
-		
+
 		// Result should have length 5 (queue size), not 10 (input size)
 		if len(result) != 5 {
 			t.Errorf("Expected length 5, got %d", len(result))
 		}
-		
+
 		// Result should not contain any stale 99 values
 		for _, v := range result {
 			if v == 99 {
@@ -433,7 +433,7 @@ func TestToSliceWithLargerInput(t *testing.T) {
 				break
 			}
 		}
-		
+
 		// Verify the result contains all queue elements
 		expected := []int{1, 1, 3, 4, 5}
 		slices.Sort(result)
@@ -449,32 +449,31 @@ func TestForeachWithMutation(t *testing.T) {
 	t.Run("WithComparator", func(t *testing.T) {
 		q := NewPriorityQueue([]int{1, 2, 3, 4, 5}, func(o1, o2 int) int { return o1 - o2 })
 		var visited []int
-		
+
 		// Callback that mutates the queue during iteration
 		q.Foreach(func(e int) bool {
 			visited = append(visited, e)
 			// Try to mutate the queue
 			if e == 3 {
-				q.Add(10) // Add a new element
+				q.Add(10)   // Add a new element
 				q.Remove(4) // Remove an element
 			}
 			return true
 		})
-		
+
 		// Should have visited exactly 5 elements (the original snapshot)
 		if len(visited) != 5 {
 			t.Errorf("Expected to visit 5 elements, visited %d: %v", len(visited), visited)
 		}
-		
-		// The visited elements should be the original 5 elements (1,2,3,4,5)
-		// even though we added 10 and removed 4 during iteration
-		expectedElements := map[int]bool{1: true, 2: true, 3: true, 4: true, 5: true}
-		for _, v := range visited {
-			if !expectedElements[v] {
-				t.Errorf("Visited unexpected element %d, expected only 1-5", v)
-			}
+
+		// The visited elements should be exactly the original 5 elements (1,2,3,4,5)
+		// Sort and compare to verify each element was visited exactly once
+		slices.Sort(visited)
+		expected := []int{1, 2, 3, 4, 5}
+		if !slices.Equal(visited, expected) {
+			t.Errorf("Expected to visit %v exactly once each, got %v", expected, visited)
 		}
-		
+
 		// Verify queue was actually mutated (should now have 10, not 4)
 		if !q.Contains(10) {
 			t.Error("Queue should contain 10 after mutation")
@@ -483,37 +482,36 @@ func TestForeachWithMutation(t *testing.T) {
 			t.Error("Queue should not contain 4 after mutation")
 		}
 	})
-	
+
 	// Test with default queue
 	t.Run("Default", func(t *testing.T) {
 		q := NewDefaultPriorityQueue([]int{1, 2, 3, 4, 5})
 		var visited []int
-		
+
 		// Callback that mutates the queue during iteration
 		q.Foreach(func(e int) bool {
 			visited = append(visited, e)
 			// Try to mutate the queue
 			if e == 3 {
-				q.Add(10) // Add a new element
+				q.Add(10)   // Add a new element
 				q.Remove(4) // Remove an element
 			}
 			return true
 		})
-		
+
 		// Should have visited exactly 5 elements (the original snapshot)
 		if len(visited) != 5 {
 			t.Errorf("Expected to visit 5 elements, visited %d: %v", len(visited), visited)
 		}
-		
-		// The visited elements should be the original 5 elements (1,2,3,4,5)
-		// even though we added 10 and removed 4 during iteration
-		expectedElements := map[int]bool{1: true, 2: true, 3: true, 4: true, 5: true}
-		for _, v := range visited {
-			if !expectedElements[v] {
-				t.Errorf("Visited unexpected element %d, expected only 1-5", v)
-			}
+
+		// The visited elements should be exactly the original 5 elements (1,2,3,4,5)
+		// Sort and compare to verify each element was visited exactly once
+		slices.Sort(visited)
+		expected := []int{1, 2, 3, 4, 5}
+		if !slices.Equal(visited, expected) {
+			t.Errorf("Expected to visit %v exactly once each, got %v", expected, visited)
 		}
-		
+
 		// Verify queue was actually mutated (should now have 10, not 4)
 		if !q.Contains(10) {
 			t.Error("Queue should contain 10 after mutation")
