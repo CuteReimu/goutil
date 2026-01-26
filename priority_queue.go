@@ -115,6 +115,7 @@ func (q *priorityQueueWithComparator[T]) ToSlice(in []T) []T {
 	if len(in) < l {
 		in = slices.Clone(q.heap.elements)
 	} else {
+		in = in[:l]
 		copy(in, q.heap.elements)
 	}
 	return in
@@ -224,6 +225,7 @@ func (q *defaultPriorityQueue[T]) ToSlice(in []T) []T {
 	if len(in) < l {
 		in = slices.Clone(q.heap.elements)
 	} else {
+		in = in[:l]
 		copy(in, q.heap.elements)
 	}
 	return in
