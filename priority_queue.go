@@ -51,11 +51,11 @@ func (h *heapWithComparator[T]) Swap(i, j int) {
 	h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
 }
 
-func (h *heapWithComparator[T]) Push(x interface{}) {
+func (h *heapWithComparator[T]) Push(x any) {
 	h.elements = append(h.elements, x.(T))
 }
 
-func (h *heapWithComparator[T]) Pop() interface{} {
+func (h *heapWithComparator[T]) Pop() any {
 	old := h.elements
 	n := len(old)
 	x := old[n-1]
@@ -121,7 +121,7 @@ func (q *priorityQueueWithComparator[T]) ToSlice(in []T) []T {
 }
 
 func (q *priorityQueueWithComparator[T]) Foreach(f func(e T) bool) {
-	es := q.heap.elements
+	es := slices.Clone(q.heap.elements)
 	n := len(es)
 	for i := 0; i < n; i++ {
 		if !f(es[i]) {
@@ -163,11 +163,11 @@ func (h *defaultHeap[T]) Swap(i, j int) {
 	h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
 }
 
-func (h *defaultHeap[T]) Push(x interface{}) {
+func (h *defaultHeap[T]) Push(x any) {
 	h.elements = append(h.elements, x.(T))
 }
 
-func (h *defaultHeap[T]) Pop() interface{} {
+func (h *defaultHeap[T]) Pop() any {
 	old := h.elements
 	n := len(old)
 	x := old[n-1]
@@ -230,7 +230,7 @@ func (q *defaultPriorityQueue[T]) ToSlice(in []T) []T {
 }
 
 func (q *defaultPriorityQueue[T]) Foreach(f func(e T) bool) {
-	es := q.heap.elements
+	es := slices.Clone(q.heap.elements)
 	n := len(es)
 	for i := 0; i < n; i++ {
 		if !f(es[i]) {
