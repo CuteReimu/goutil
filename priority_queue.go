@@ -2,6 +2,7 @@ package goutil
 
 import (
 	"cmp"
+	"container/heap"
 	"slices"
 )
 
@@ -32,31 +33,64 @@ type PriorityQueue[T any] interface {
 	Poll() T
 }
 
-type priorityQueueWithComparator[T any] struct {
-	queue      []T
+// heapWithComparator is an internal heap implementation using a custom comparator
+type heapWithComparator[T any] struct {
+	elements   []T
 	comparator func(o1, o2 T) int
+}
+
+func (h *heapWithComparator[T]) Len() int {
+	return len(h.elements)
+}
+
+func (h *heapWithComparator[T]) Less(i, j int) bool {
+	return h.comparator(h.elements[i], h.elements[j]) < 0
+}
+
+func (h *heapWithComparator[T]) Swap(i, j int) {
+	h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
+}
+
+func (h *heapWithComparator[T]) Push(x any) {
+	h.elements = append(h.elements, x.(T))
+}
+
+func (h *heapWithComparator[T]) Pop() any {
+	old := h.elements
+	n := len(old)
+	x := old[n-1]
+	var zero T
+	old[n-1] = zero
+	h.elements = old[:n-1]
+	return x
+}
+
+type priorityQueueWithComparator[T any] struct {
+	heap *heapWithComparator[T]
 }
 
 // NewPriorityQueue 用给定的初始值和比较函数新建优先队列
 func NewPriorityQueue[T any](values []T, comparator func(o1, o2 T) int) PriorityQueue[T] {
-	q := &priorityQueueWithComparator[T]{queue: values, comparator: comparator}
-	q.heapify()
+	h := &heapWithComparator[T]{
+		elements:   values,
+		comparator: comparator,
+	}
+	heap.Init(h)
+	q := &priorityQueueWithComparator[T]{heap: h}
 	return q
 }
 
 func (q *priorityQueueWithComparator[T]) Add(e T) {
-	q.queue = append(q.queue, e)
-	q.siftUp(len(q.queue)-1, e)
+	heap.Push(q.heap, e)
 }
 
 func (q *priorityQueueWithComparator[T]) Peek() T {
-	return q.queue[0]
+	return q.heap.elements[0]
 }
 
 func (q *priorityQueueWithComparator[T]) indexOf(o T) int {
-	es := q.queue
-	for i, n := 0, len(q.queue); i < n; i++ {
-		if q.comparator(o, es[i]) == 0 {
+	for i := 0; i < len(q.heap.elements); i++ {
+		if q.heap.comparator(o, q.heap.elements[i]) == 0 {
 			return i
 		}
 	}
@@ -67,10 +101,9 @@ func (q *priorityQueueWithComparator[T]) Remove(o T) bool {
 	i := q.indexOf(o)
 	if i == -1 {
 		return false
-	} else {
-		q.removeAt(i)
-		return true
 	}
+	heap.Remove(q.heap, i)
+	return true
 }
 
 func (q *priorityQueueWithComparator[T]) Contains(o T) bool {
@@ -78,127 +111,96 @@ func (q *priorityQueueWithComparator[T]) Contains(o T) bool {
 }
 
 func (q *priorityQueueWithComparator[T]) ToSlice(in []T) []T {
-	l := len(q.queue)
+	l := len(q.heap.elements)
 	if len(in) < l {
-		in = slices.Clone(q.queue)
+		in = slices.Clone(q.heap.elements)
 	} else {
-		copy(in, q.queue)
+		in = in[:l]
+		copy(in, q.heap.elements)
 	}
 	return in
 }
 
 func (q *priorityQueueWithComparator[T]) Foreach(f func(e T) bool) {
-	es := q.queue
-	for i, n := 0, len(q.queue); i < n && f(es[i]); i++ {
+	es := slices.Clone(q.heap.elements)
+	n := len(es)
+	for i := 0; i < n; i++ {
+		if !f(es[i]) {
+			break
+		}
 	}
 }
 
 func (q *priorityQueueWithComparator[T]) Len() int {
-	return len(q.queue)
+	return q.heap.Len()
 }
 
 func (q *priorityQueueWithComparator[T]) Clear() {
-	q.queue = nil
+	q.heap.elements = nil
 }
 
 func (q *priorityQueueWithComparator[T]) Poll() T {
-	es := q.queue
-	result := es[0]
-	n := uint(len(es)) - 1
-	x := es[n]
-	q.queue = q.queue[:n]
-	if n > 0 {
-		q.siftDown(0, x)
-	}
+	// Access the first element directly to preserve the previous
+	// slice bounds-check panic behavior when the queue is empty.
+	result := q.heap.elements[0]
+	heap.Remove(q.heap, 0)
 	return result
 }
 
-func (q *priorityQueueWithComparator[T]) removeAt(i int) T {
-	es := q.queue
-	n := uint(len(es)) - 1
-	moved := es[n]
-	q.queue = q.queue[:n]
-	s := len(q.queue)
-	if s != i {
-		q.siftDown(i, moved)
-		if q.comparator(es[i], moved) == 0 {
-			q.siftUp(i, moved)
-			if q.comparator(es[i], moved) != 0 {
-				return moved
-			}
-		}
-	}
-	return moved
+// defaultHeap is an internal heap implementation for ordered types
+type defaultHeap[T cmp.Ordered] struct {
+	elements []T
 }
 
-func (q *priorityQueueWithComparator[T]) siftUp(k int, e T) {
-	for k > 0 {
-		parent := int((uint(k) - 1) >> 1)
-		e1 := q.queue[parent]
-		if q.comparator(e, e1) >= 0 {
-			break
-		}
-		q.queue[k] = e1
-		k = parent
-	}
-	q.queue[k] = e
+func (h *defaultHeap[T]) Len() int {
+	return len(h.elements)
 }
 
-func (q *priorityQueueWithComparator[T]) siftDown(k int, x T) {
-	es := q.queue
-	n := len(es)
-	half := int(uint(n) >> 1)
-	for k < half {
-		child := (k << 1) + 1
-		c := es[child]
-		right := child + 1
-		if right < n && q.comparator(c, es[right]) > 0 {
-			child = right
-			c = es[child]
-		}
-		if q.comparator(x, c) <= 0 {
-			break
-		}
-		es[k] = c
-		k = child
-	}
-	es[k] = x
+func (h *defaultHeap[T]) Less(i, j int) bool {
+	return h.elements[i] < h.elements[j]
 }
 
-func (q *priorityQueueWithComparator[T]) heapify() {
-	es := q.queue
-	n := len(es)
-	if n > 1 {
-		for i := int((uint(n) >> 1) - 1); i >= 0; i-- {
-			q.siftDown(i, es[i])
-		}
-	}
+func (h *defaultHeap[T]) Swap(i, j int) {
+	h.elements[i], h.elements[j] = h.elements[j], h.elements[i]
+}
+
+func (h *defaultHeap[T]) Push(x any) {
+	h.elements = append(h.elements, x.(T))
+}
+
+func (h *defaultHeap[T]) Pop() any {
+	old := h.elements
+	n := len(old)
+	x := old[n-1]
+	var zero T
+	old[n-1] = zero
+	h.elements = old[:n-1]
+	return x
 }
 
 type defaultPriorityQueue[T cmp.Ordered] struct {
-	queue []T
+	heap *defaultHeap[T]
 }
 
 // NewDefaultPriorityQueue 用给定的初始值新建优先队列
 func NewDefaultPriorityQueue[T cmp.Ordered](values []T) PriorityQueue[T] {
-	q := &defaultPriorityQueue[T]{queue: values}
-	q.heapify()
+	h := &defaultHeap[T]{elements: values}
+	heap.Init(h)
+	q := &defaultPriorityQueue[T]{heap: h}
 	return q
 }
 
 func (q *defaultPriorityQueue[T]) Add(e T) {
-	q.queue = append(q.queue, e)
-	q.siftUp(len(q.queue)-1, e)
+	heap.Push(q.heap, e)
 }
 
 func (q *defaultPriorityQueue[T]) Peek() T {
-	return q.queue[0]
+	return q.heap.elements[0]
 }
 
 func (q *defaultPriorityQueue[T]) indexOf(o T) int {
-	es := q.queue
-	for i, n := 0, len(q.queue); i < n; i++ {
-		if o == es[i] {
+	for i := 0; i < len(q.heap.elements); i++ {
+		if o == q.heap.elements[i] {
 			return i
 		}
 	}
@@ -209,10 +211,9 @@ func (q *defaultPriorityQueue[T]) Remove(o T) bool {
 	i := q.indexOf(o)
 	if i == -1 {
 		return false
-	} else {
-		q.removeAt(i)
-		return true
 	}
+	heap.Remove(q.heap, i)
+	return true
 }
 
 func (q *defaultPriorityQueue[T]) Contains(o T) bool {
@@ -220,99 +221,38 @@ func (q *defaultPriorityQueue[T]) Contains(o T) bool {
 }
 
 func (q *defaultPriorityQueue[T]) ToSlice(in []T) []T {
-	l := len(q.queue)
+	l := len(q.heap.elements)
 	if len(in) < l {
-		in = slices.Clone(q.queue)
+		in = slices.Clone(q.heap.elements)
 	} else {
-		copy(in, q.queue)
+		in = in[:l]
+		copy(in, q.heap.elements)
 	}
 	return in
 }
 
 func (q *defaultPriorityQueue[T]) Foreach(f func(e T) bool) {
-	es := q.queue
-	for i, n := 0, len(q.queue); i < n && f(es[i]); i++ {
+	es := slices.Clone(q.heap.elements)
+	n := len(es)
+	for i := 0; i < n; i++ {
+		if !f(es[i]) {
+			break
+		}
 	}
 }
 
 func (q *defaultPriorityQueue[T]) Len() int {
-	return len(q.queue)
+	return q.heap.Len()
 }
 
 func (q *defaultPriorityQueue[T]) Clear() {
-	q.queue = nil
+	q.heap.elements = nil
 }
 
 func (q *defaultPriorityQueue[T]) Poll() T {
-	es := q.queue
-	result := es[0]
-	n := uint(len(es)) - 1
-	x := es[n]
-	q.queue = q.queue[:n]
-	if n > 0 {
-		q.siftDown(0, x)
-	}
+	// Access the first element directly to preserve the previous
+	// slice bounds-check panic behavior when the queue is empty.
+	result := q.heap.elements[0]
+	heap.Remove(q.heap, 0)
 	return result
-}
-
-func (q *defaultPriorityQueue[T]) removeAt(i int) T {
-	es := q.queue
-	n := uint(len(es)) - 1
-	moved := es[n]
-	q.queue = q.queue[:n]
-	s := len(q.queue)
-	if s != i {
-		q.siftDown(i, moved)
-		if es[i] == moved {
-			q.siftUp(i, moved)
-			if es[i] != moved {
-				return moved
-			}
-		}
-	}
-	return moved
-}
-
-func (q *defaultPriorityQueue[T]) siftUp(k int, e T) {
-	for k > 0 {
-		parent := int((uint(k) - 1) >> 1)
-		e1 := q.queue[parent]
-		if e >= e1 {
-			break
-		}
-		q.queue[k] = e1
-		k = parent
-	}
-	q.queue[k] = e
-}
-
-func (q *defaultPriorityQueue[T]) siftDown(k int, x T) {
-	es := q.queue
-	n := len(es)
-	half := int(uint(n) >> 1)
-	for k < half {
-		child := (k << 1) + 1
-		c := es[child]
-		right := child + 1
-		if right < n && c > es[right] {
-			child = right
-			c = es[child]
-		}
-		if x <= c {
-			break
-		}
-		es[k] = c
-		k = child
-	}
-	es[k] = x
-}
-
-func (q *defaultPriorityQueue[T]) heapify() {
-	es := q.queue
-	n := len(es)
-	if n > 1 {
-		for i := int((uint(n) >> 1) - 1); i >= 0; i-- {
-			q.siftDown(i, es[i])
-		}
-	}
 }
