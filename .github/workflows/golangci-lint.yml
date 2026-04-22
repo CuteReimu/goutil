@@ -22,7 +22,7 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: latest
-          args: --out-${NO_FUTURE}format line-number --timeout 3m0s
+          args: --timeout 3m0s
 
       - name: Build
         run: go build -v ./...
